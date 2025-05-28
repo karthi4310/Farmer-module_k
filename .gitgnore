@@ -1,3 +1,49 @@
-backend/farmer/farmer-module/target/
-backend/farmer/farmer-module/target/classes/firebase-service-account.json
-backend/farmer/farmer-module/src/main/resources/firebase-service-account.json
+# Java & Spring Boot
+target/
+!.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+*.ear
+
+# IDEs
+*.iml
+.idea/
+.vscode/
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Environment & Secret files
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.crt
+
+# Firebase service account (explicitly listed)
+**/firebase-service-account.json
+
+# Gradle (if used)
+.gradle/
+build/
+
+# Maven
+.mvn/
+.settings/
+.project
+.classpath
+
+# Logs
+logs/
+*.log
+
+# Test reports
+test-output/
+surefire-reports/
+
+# Other
+node_modules/
