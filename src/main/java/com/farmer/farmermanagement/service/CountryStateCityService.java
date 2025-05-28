@@ -1,68 +1,43 @@
-package com.farmer.farmermanagement.GeoLocationController;
+package com.farmer.farmermanagement.service;
 
-import com.farmer.farmermanagement.entity.Country;
-import com.farmer.farmermanagement.repository.CountryRepository;
-import com.farmer.farmermanagement.service.CountryStateCityService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.Optional;
+@Service
+public class CountryStateCityService {
+	private final String API_KEY = "dU42OW45M2NxNXhranc2U2pwS2VXdlE3cHpCWW1GS0pnQ3RkeGVhRg=="; // Replace with your
+																								// actual API key
+	private final String BASE_URL = "https://api.countrystatecity.in/v1/";
 
-@RestController
-@RequestMapping("/api/countries")
-public class CountryController {
+	private RestTemplate restTemplate = new RestTemplate();
 
-    @Autowired
-    private CountryStateCityService countryService;
+	private HttpEntity<String> createHttpEntity() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("X-CSCAPI-KEY", API_KEY);
+		return new HttpEntity<>(headers);
+	}
 
-    @Autowired
-    private CountryRepository countryRepository;
+	public String getCountries() {
+		ResponseEntity<String> response = restTemplate.exchange(BASE_URL + "countries",
+				org.springframework.http.HttpMethod.GET, createHttpEntity(), String.class);
+		return response.getBody();
+	}
 
-    // 🌍 Fetch and Save Countries from External API
-    @PostMapping("/fetch")
-    public String fetchAndSaveCountries() {
-        countryService.fetchAndSaveCountries();
-        return "Countries fetched and saved successfully!";
-    }
+	public String getStates(String countryCode) {
+		ResponseEntity<String> response = restTemplate.exchange(BASE_URL + "countries/" + countryCode + "/states",
+				org.springframework.http.HttpMethod.GET, createHttpEntity(), String.class);
+		System.out.println(BASE_URL + "countries/" + countryCode + "/states");
+		System.out.println(response.getBody());
+		return response.getBody();
+	}
 
-    // 🌍 Get All Countries
-    @GetMapping
-    public List<Country> getAllCountries() {
-        return countryRepository.findAll();
-    }
-
-    // 🌍 Get Country by ID
-    @GetMapping("/{id}")
-    public Country getCountryById(@PathVariable Long id) {
-        return countryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Country not found with id: " + id));
-    }
-
-    // 🌍 Create Country manually
-    @PostMapping
-    public Country createCountry(@RequestBody Country country) {
-        return countryRepository.save(country);
-    }
-
-    // 🌍 Update Country
-    @PutMapping("/{id}")
-    public Country updateCountry(@PathVariable Long id, @RequestBody Country countryDetails) {
-        Country country = countryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Country not found with id: " + id));
-
-        country.setName(countryDetails.getName());
-        country.setIso2(countryDetails.getIso2());
-        country.setDialCode(countryDetails.getDialCode());
-        country.setActive(countryDetails.isActive());
-
-        return countryRepository.save(country);
-    }
-
-    // 🌍 Delete Country
-    @DeleteMapping("/{id}")
-    public String deleteCountry(@PathVariable Long id) {
-        countryRepository.deleteById(id);
-        return "Country deleted successfully!";
-    }
+	public String getDistricts(String countryCode, String stateCode) {
+		ResponseEntity<String> response = restTemplate.exchange(
+				BASE_URL + "countries/" + countryCode + "/states/" + stateCode + "/cities",
+				org.springframework.http.HttpMethod.GET, createHttpEntity(), String.class);
+		return response.getBody();
+	}
 }
