@@ -15,10 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.farmer.farmermanagement.dto.ForgotPasswordDTO;
+import com.farmer.farmermanagement.dto.ForgotUserIdDTO;
 import com.farmer.farmermanagement.dto.LoginRequest;
 import com.farmer.farmermanagement.dto.UserDTO;
 import com.farmer.farmermanagement.dto.UserResponseDTO;
 import com.farmer.farmermanagement.entity.User;
+import com.farmer.farmermanagement.exception.UserNotFoundException;
 import com.farmer.farmermanagement.security.JwtUtil;
 import com.farmer.farmermanagement.service.CountryStateCityService;
 import com.farmer.farmermanagement.service.EmailService;
@@ -87,19 +90,26 @@ public class AuthController {
 		}
 	}
 
-	@PostMapping("/forgot-user-id")
-	public ResponseEntity<String> forgotUserId(@RequestParam String emailOrPhone) {
-		try {
-			return ResponseEntity.ok(userService.forgotUserId(emailOrPhone));
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body("Failed to send user ID: " + e.getMessage());
-		}
-	}
+@PostMapping("/forgot-user-id")
+public ResponseEntity<String> forgotUserId(@RequestBody ForgotUserIdDTO forgotUserIdDTO) {
+    try {
+        String emailOrPhone = forgotUserIdDTO.getEmailOrPhone();
+        return ResponseEntity.ok(userService.forgotUserId(emailOrPhone));
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body("Failed to send user ID: " + e.getMessage());
+    }
+}
 
-	@PostMapping("/forgot-password")
-	public ResponseEntity<String> forgotPassword(@RequestParam String emailOrPhone) {
-		return ResponseEntity.ok(userService.forgotPassword(emailOrPhone));
-	}
+@PostMapping("/forgot-password")
+public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordDTO dto) {
+    try {
+        String emailOrPhone = dto.getEmailOrPhone();
+        return ResponseEntity.ok(userService.forgotPassword(emailOrPhone));
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body("Failed to send reset password: " + e.getMessage());
+    }
+}
+
 
 	@PostMapping("/reset-password")
 	public ResponseEntity<String> resetPassword(@RequestParam String emailOrPhone, @RequestParam String otp,

@@ -54,6 +54,7 @@ C:\Karthik new workspace\New Module\Farmer-module_k\src\main\java\com\farmer\far
 C:\Karthik new workspace\New Module\Farmer-module_k\src\main\java\com\farmer\farmermanagement\exception\LandDetailsNotFoundException.java
 C:\Karthik new workspace\New Module\Farmer-module_k\src\main\java\com\farmer\farmermanagement\exception\MessagingException.java
 C:\Karthik new workspace\New Module\Farmer-module_k\src\main\java\com\farmer\farmermanagement\exception\ResourceNotFoundException.java
+C:\Karthik new workspace\New Module\Farmer-module_k\src\main\java\com\farmer\farmermanagement\exception\UserAlreadyExistsException.java
 C:\Karthik new workspace\New Module\Farmer-module_k\src\main\java\com\farmer\farmermanagement\exception\UserNotFoundException.java
 C:\Karthik new workspace\New Module\Farmer-module_k\src\main\java\com\farmer\farmermanagement\FarmermanagementApplication.java
 C:\Karthik new workspace\New Module\Farmer-module_k\src\main\java\com\farmer\farmermanagement\mapper\AddressMapper.java

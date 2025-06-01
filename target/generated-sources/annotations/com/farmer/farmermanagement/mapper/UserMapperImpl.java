@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-05-30T15:04:10+0530",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.42.0.v20250514-1000, environment: Java 21.0.7 (Eclipse Adoptium)"
+    date = "2025-05-30T17:37:24+0530",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.14 (Oracle Corporation)"
 )
 @Component
 public class UserMapperImpl implements UserMapper {
@@ -23,18 +23,18 @@ public class UserMapperImpl implements UserMapper {
 
         UserDTO userDTO = new UserDTO();
 
-        userDTO.setCountry( user.getCountry() );
+        userDTO.setFirstName( user.getFirstName() );
+        userDTO.setLastName( user.getLastName() );
+        userDTO.setEmail( user.getEmail() );
+        userDTO.setPhoneNumber( user.getPhoneNumber() );
+        userDTO.setPassword( user.getPassword() );
         if ( user.getDateOfBirth() != null ) {
             userDTO.setDateOfBirth( DateTimeFormatter.ISO_LOCAL_DATE.format( user.getDateOfBirth() ) );
         }
-        userDTO.setEmail( user.getEmail() );
-        userDTO.setFirstName( user.getFirstName() );
         userDTO.setGender( user.getGender() );
-        userDTO.setLastName( user.getLastName() );
-        userDTO.setPassword( user.getPassword() );
-        userDTO.setPhoneNumber( user.getPhoneNumber() );
-        userDTO.setPinCode( user.getPinCode() );
+        userDTO.setCountry( user.getCountry() );
         userDTO.setState( user.getState() );
+        userDTO.setPinCode( user.getPinCode() );
         userDTO.setTimeZone( user.getTimeZone() );
 
         return userDTO;
@@ -48,18 +48,18 @@ public class UserMapperImpl implements UserMapper {
 
         User.UserBuilder user = User.builder();
 
-        user.country( userDto.getCountry() );
+        user.firstName( userDto.getFirstName() );
+        user.lastName( userDto.getLastName() );
+        user.email( userDto.getEmail() );
+        user.phoneNumber( userDto.getPhoneNumber() );
+        user.password( userDto.getPassword() );
         if ( userDto.getDateOfBirth() != null ) {
             user.dateOfBirth( LocalDate.parse( userDto.getDateOfBirth() ) );
         }
-        user.email( userDto.getEmail() );
-        user.firstName( userDto.getFirstName() );
         user.gender( userDto.getGender() );
-        user.lastName( userDto.getLastName() );
-        user.password( userDto.getPassword() );
-        user.phoneNumber( userDto.getPhoneNumber() );
-        user.pinCode( userDto.getPinCode() );
+        user.country( userDto.getCountry() );
         user.state( userDto.getState() );
+        user.pinCode( userDto.getPinCode() );
         user.timeZone( userDto.getTimeZone() );
 
         return user.build();
