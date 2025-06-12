@@ -1,5 +1,6 @@
 package com.farmer.farmermanagement.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
@@ -36,26 +37,29 @@ public class AuthController {
     private final EmailService emailService;
     private final CountryStateCityService countryService;
 
-    /* ───────────── LOGIN ───────────── */
+  
+@PostMapping("/login")
+public ResponseEntity<Map<String, String>> login(@RequestBody @Valid LoginRequest request) {
+    try {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
 
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody @Valid LoginRequest request) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword()));
-            String token = jwtUtil.generateToken(authentication);
+        String token = jwtUtil.generateToken(authentication);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", "Bearer " + token);
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("token", token);
+        responseBody.put("message", "Login successful");
 
-            return ResponseEntity.ok().headers(headers).body("Logged in successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED)
-                    .body("Login failed: " + e.getMessage());
-        }
+        return ResponseEntity.ok(responseBody);
+
+    } catch (Exception e) {
+        Map<String, String> errorBody = new HashMap<>();
+        errorBody.put("message", "Login failed: " + e.getMessage());
+        return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).body(errorBody);
     }
+}
 
-    /* ───────────── SEND OTP (generic) ───────────── */
+
 @PostMapping("/send-otp")
 public ResponseEntity<String> sendOtp(@RequestBody Map<String, String> request) {
     String emailOrPhone = request.get("emailOrPhone");
@@ -70,7 +74,7 @@ public ResponseEntity<String> sendOtp(@RequestBody Map<String, String> request) 
     return ResponseEntity.ok("OTP sent successfully to your registered email/phone.");
 }
 
-/* ───────────── VERIFY OTP ───────────── */
+
 @PostMapping("/verify-otp")
 public ResponseEntity<String> verifyOtp(@RequestBody Map<String, String> request) {
     String emailOrPhone = request.get("emailOrPhone");
@@ -89,7 +93,7 @@ public ResponseEntity<String> verifyOtp(@RequestBody Map<String, String> request
 }
 
 
-    /* ───────────── REGISTRATION ───────────── */
+   
 
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserDTO userDTO) {
@@ -97,7 +101,6 @@ public ResponseEntity<String> verifyOtp(@RequestBody Map<String, String> request
         return ResponseEntity.ok(UserResponseDTO.fromEntity(user, "User registered successfully."));
     }
 
-    /* ───────────── FORGOT USER ID ───────────── */
 
     @PostMapping("/forgot-user-id")
     public ResponseEntity<String> forgotUserId(@RequestBody Map<String, String> request) {
@@ -109,7 +112,7 @@ public ResponseEntity<String> verifyOtp(@RequestBody Map<String, String> request
         return ResponseEntity.ok(result);
     }
 
-    /* ───────────── FORGOT PASSWORD ───────────── */
+
 
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> request) {
@@ -129,7 +132,7 @@ public ResponseEntity<String> verifyOtp(@RequestBody Map<String, String> request
         return ResponseEntity.ok("Password reset OTP sent successfully to your registered email or phone.");
     }
 
-    /* ───────────── RESET PASSWORD (NO OTP) ───────────── */
+
 
     @PostMapping("/reset-password/confirm")
     public ResponseEntity<String> resetPassword(@RequestBody @Valid ResetPasswordDTO request) {
@@ -160,14 +163,13 @@ public ResponseEntity<String> verifyOtp(@RequestBody Map<String, String> request
             } else {
                 return ResponseEntity.status(500).body("Password change failed.");
             }
-        } catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) { 
             return ResponseEntity.badRequest().body(ex.getMessage());
         } catch (Exception ex) {
             return ResponseEntity.status(500).body("An error occurred: " + ex.getMessage());
         }
     }
 
-    /* ───────────── LOCATION DATA ───────────── */
 
     @GetMapping("/countries")
     public ResponseEntity<String> getCountries() {
@@ -185,7 +187,7 @@ public ResponseEntity<String> verifyOtp(@RequestBody Map<String, String> request
         return ResponseEntity.ok(countryService.getDistricts(countryCode, stateCode));
     }
 
-    /* ───────────── TEST ───────────── */
+ 
 
     @GetMapping("/test")
     public String test() {
