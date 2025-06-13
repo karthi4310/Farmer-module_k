@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-03T10:27:59+0530",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.14 (Oracle Corporation)"
+    date = "2025-06-13T08:23:14+0530",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.42.0.v20250514-1000, environment: Java 21.0.7 (Eclipse Adoptium)"
 )
 @Component
 public class AddressMapperImpl implements AddressMapper {
@@ -21,11 +21,11 @@ public class AddressMapperImpl implements AddressMapper {
 
         AddressDto.AddressDtoBuilder addressDto = AddressDto.builder();
 
-        addressDto.street( address.getStreet() );
         addressDto.city( address.getCity() );
         addressDto.district( address.getDistrict() );
-        addressDto.state( address.getState() );
         addressDto.pincode( address.getPincode() );
+        addressDto.state( address.getState() );
+        addressDto.street( address.getStreet() );
 
         return addressDto.build();
     }
@@ -38,11 +38,11 @@ public class AddressMapperImpl implements AddressMapper {
 
         Address address = new Address();
 
-        address.setStreet( addressDto.getStreet() );
         address.setCity( addressDto.getCity() );
         address.setDistrict( addressDto.getDistrict() );
-        address.setState( addressDto.getState() );
         address.setPincode( addressDto.getPincode() );
+        address.setState( addressDto.getState() );
+        address.setStreet( addressDto.getStreet() );
 
         return address;
     }
