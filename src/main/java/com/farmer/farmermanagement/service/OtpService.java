@@ -1,27 +1,31 @@
 package com.farmer.farmermanagement.service;
- 
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
- 
+
 import java.util.Map;
+import java.util.Set;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
- 
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class OtpService {
- 
+
     private final FirebaseAuth firebaseAuth;
- 
-    // In-memory store — for production use Redis/Caffeine with expiration
+
+    // OTP store: emailOrPhone -> otp
     private final Map<String, String> otpStore = new ConcurrentHashMap<>();
- 
-    // ✅ Firebase token verification for Firebase-authenticated flows
+
+    // Verified email/phones
+    private final Set<String> verifiedUsers = ConcurrentHashMap.newKeySet();
+
+    // ✅ Firebase token verification
     public boolean verifyOtp(String idToken) {
         try {
             FirebaseToken decodedToken = firebaseAuth.verifyIdToken(idToken);
@@ -32,24 +36,36 @@ public class OtpService {
             return false;
         }
     }
- 
-    // ✅ Verify OTP sent manually via email or phone
+
+    // ✅ Manual OTP verification
     public boolean verifyOtp(String emailOrPhone, String otp) {
         String storedOtp = otpStore.get(emailOrPhone);
         boolean isValid = storedOtp != null && storedOtp.equals(otp);
- 
+
         log.info("Verifying OTP for {}: provided={}, expected={}, result={}",
                 emailOrPhone, otp, storedOtp, isValid);
- 
+
         if (isValid) {
             otpStore.remove(emailOrPhone); // OTP is single-use
-            log.info("OTP verified and removed from store for {}", emailOrPhone);
+            verifiedUsers.add(emailOrPhone); // ✅ Mark as verified
+            log.info("OTP verified and added to verified set for {}", emailOrPhone);
         }
- 
+
         return isValid;
     }
- 
-    // ✅ Extract email/phone from Firebase token (for Firebase-auth flows)
+
+    // ✅ Check if email/phone is verified
+    public boolean isVerified(String emailOrPhone) {
+        return verifiedUsers.contains(emailOrPhone);
+    }
+
+    // ✅ Clear verification (after registration)
+    public void clearVerification(String emailOrPhone) {
+        verifiedUsers.remove(emailOrPhone);
+        log.info("Cleared verification state for {}", emailOrPhone);
+    }
+
+    // ✅ Extract email from Firebase token
     public String getUserEmailOrPhoneFromToken(String idToken) {
         try {
             FirebaseToken decodedToken = firebaseAuth.verifyIdToken(idToken);
@@ -61,37 +77,37 @@ public class OtpService {
             return null;
         }
     }
- 
-    // ✅ Generate and send OTP (auto-detects email or phone)
+
+    // ✅ Generate + send OTP (email/SMS)
     public String generateAndSendOtp(String emailOrPhone) {
         String otp = String.format("%06d", new Random().nextInt(999999));
         otpStore.put(emailOrPhone, otp);
- 
+
         boolean isEmail = emailOrPhone.contains("@");
         log.info("Generated OTP for {}: {}", isEmail ? "email" : "phone", otp);
- 
+
         if (isEmail) {
             sendOtpEmail(emailOrPhone, otp);
         } else {
             sendOtpSms(emailOrPhone, otp);
         }
- 
+
         return otp;
     }
- 
-    // ✅ Simulate sending OTP via email (log only — replace with SMTP integration)
+
+    // ✅ Simulate email OTP sending
     private void sendOtpEmail(String email, String otp) {
         log.info("OTP email sent to {}: {}", email, otp);
-        // Integrate JavaMailSender or SendGrid here
+        // Integrate JavaMailSender here
     }
- 
-    // ✅ Simulate sending OTP via SMS (log only — replace with Firebase/SMS service)
+
+    // ✅ Simulate SMS OTP sending
     private void sendOtpSms(String phoneNumber, String otp) {
         log.info("OTP SMS sent to {}: {}", phoneNumber, otp);
-        // Integrate Firebase phone auth or Twilio here
+        // Integrate Twilio or Firebase SMS here
     }
- 
-    // ✅ Alternative explicit verification method (optional)
+
+    // ✅ Optional alias
     public boolean verifyOtpCode(String phoneNumber, String otp) {
         return verifyOtp(phoneNumber, otp);
     }

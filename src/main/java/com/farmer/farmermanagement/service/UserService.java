@@ -1,8 +1,5 @@
 package com.farmer.farmermanagement.service;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.farmer.farmermanagement.dto.EmailServiceDTO;
 import com.farmer.farmermanagement.dto.UserDTO;
 import com.farmer.farmermanagement.entity.User;
@@ -10,9 +7,10 @@ import com.farmer.farmermanagement.exception.UserAlreadyExistsException;
 import com.farmer.farmermanagement.exception.UserNotFoundException;
 import com.farmer.farmermanagement.mapper.UserMapper;
 import com.farmer.farmermanagement.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -23,22 +21,34 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final EmailService emailService;
+    private final OtpService otpService;
 
-    // Register a new user
+    // ✅ Register a new user with OTP verification
     public User registerUser(UserDTO userDTO) {
         log.info("Registering user with email: {}", userDTO.getEmail());
 
+        // Check if email already registered
         userRepository.findByEmail(userDTO.getEmail()).ifPresent(user -> {
             log.warn("Attempted registration with existing email: {}", userDTO.getEmail());
             throw new UserAlreadyExistsException("Email already registered: " + userDTO.getEmail());
         });
 
+        // Check if OTP was verified
+        if (!otpService.isVerified(userDTO.getEmail())) {
+            log.warn("Registration attempt without verifying OTP for email: {}", userDTO.getEmail());
+            throw new IllegalStateException("OTP not verified. Please verify your email before registering.");
+        }
+
+        // Map and save user
         User user = userMapper.toEntity(userDTO);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
-
         log.info("User registered successfully with ID: {}", savedUser.getId());
 
+        // Clear OTP verification state
+        otpService.clearVerification(userDTO.getEmail());
+
+        // Send welcome email
         try {
             emailService.sendRegistrationEmail(savedUser.getEmail(), savedUser.getFirstName());
             log.info("Registration email sent to {}", savedUser.getEmail());
@@ -49,21 +59,23 @@ public class UserService {
         return savedUser;
     }
 
-    // Forgot User ID via email or phone
+    // ✅ Forgot User ID — send OTP
     public String forgotUserId(String emailOrPhone) {
         log.info("Forgot user ID request for: {}", emailOrPhone);
+        validateUserExists(emailOrPhone);
 
-        User user = findUserByEmailOrPhone(emailOrPhone);
-
+        String otp = otpService.generateAndSendOtp(emailOrPhone);
         try {
-            emailService.sendUserIdEmail(user.getEmail(), String.valueOf(user.getId()));
-            log.info("User ID email sent to {}", user.getEmail());
+            emailService.sendOtpEmail(emailOrPhone,
+                    "Your OTP for recovering your User ID is: " + otp +
+                    ". Use this OTP to verify your identity. It is valid for 10 minutes.");
+            log.info("OTP sent for user ID recovery to {}", emailOrPhone);
         } catch (Exception e) {
-            log.error("Failed to send user ID email to {}: {}", user.getEmail(), e.getMessage());
-            throw new RuntimeException("Failed to send user ID email.");
+            log.error("Failed to send OTP for user ID recovery to {}: {}", emailOrPhone, e.getMessage());
+            throw new RuntimeException("Failed to send OTP. Please try again.");
         }
 
-        return "User ID sent to your registered email.";
+        return "OTP has been sent to your registered " + (emailOrPhone.contains("@") ? "email" : "phone") + ".";
     }
 
     // ✅ Reset password without OTP
@@ -78,9 +90,9 @@ public class UserService {
         User user = findUserByEmailOrPhone(emailOrPhone);
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
-
         log.info("Password reset successfully for user: {}", emailOrPhone);
 
+        // Send confirmation email
         try {
             String subject = "Password Reset Confirmation";
             String body = "Dear " + (user.getFirstName() != null ? user.getFirstName() : "User") + ",\n\n"
@@ -103,11 +115,20 @@ public class UserService {
         return true;
     }
 
-    // Helper method to find user by email or phone
+    // ✅ Validate if a user exists by email or phone
+    public void validateUserExists(String emailOrPhone) {
+        findUserByEmailOrPhone(emailOrPhone); // throws exception if not found
+    }
+
+    // ✅ Get user object for given email or phone
+    public User getUserByEmailOrPhone(String emailOrPhone) {
+        return findUserByEmailOrPhone(emailOrPhone);
+    }
+
+    // 🔒 Private helper to find user
     private User findUserByEmailOrPhone(String emailOrPhone) {
         return userRepository.findByEmail(emailOrPhone)
                 .or(() -> userRepository.findByPhoneNumber(emailOrPhone))
-                .orElseThrow(() ->
-                        new UserNotFoundException("User not found with email or phone: " + emailOrPhone));
+                .orElseThrow(() -> new UserNotFoundException("User not found with email or phone: " + emailOrPhone));
     }
 }
