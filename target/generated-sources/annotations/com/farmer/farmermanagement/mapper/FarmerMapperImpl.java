@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-17T09:04:58+0530",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.14 (Oracle Corporation)"
+    date = "2025-06-19T17:11:30+0530",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.42.0.v20250514-1000, environment: Java 21.0.7 (Eclipse Adoptium)"
 )
 @Component
 public class FarmerMapperImpl implements FarmerMapper {
@@ -39,21 +39,21 @@ public class FarmerMapperImpl implements FarmerMapper {
         farmer.setBankDetails( bankDetailsMapper.toEntity( dto.getBankDetails() ) );
         farmer.setLandDetails( landDetailsMapper.toEntity( dto.getLandDetails() ) );
         farmer.setCrops( cropDtoListToCropList( dto.getCrops() ) );
-        farmer.setId( dto.getId() );
-        farmer.setFirstName( dto.getFirstName() );
-        farmer.setMiddleName( dto.getMiddleName() );
-        farmer.setLastName( dto.getLastName() );
         farmer.setAadharNumber( dto.getAadharNumber() );
-        farmer.setEmail( dto.getEmail() );
-        farmer.setPhoneNumber( dto.getPhoneNumber() );
-        farmer.setGender( dto.getGender() );
-        farmer.setEducation( dto.getEducation() );
+        farmer.setDateOfBirth( dto.getDateOfBirth() );
         farmer.setDocument( dto.getDocument() );
         farmer.setDocumentPath( dto.getDocumentPath() );
-        farmer.setDateOfBirth( dto.getDateOfBirth() );
+        farmer.setEducation( dto.getEducation() );
+        farmer.setEmail( dto.getEmail() );
+        farmer.setFarmerType( dto.getFarmerType() );
+        farmer.setFirstName( dto.getFirstName() );
+        farmer.setGender( dto.getGender() );
+        farmer.setId( dto.getId() );
+        farmer.setLastName( dto.getLastName() );
+        farmer.setMiddleName( dto.getMiddleName() );
+        farmer.setPhoneNumber( dto.getPhoneNumber() );
         farmer.setPortalAccess( dto.getPortalAccess() );
         farmer.setPortalRole( dto.getPortalRole() );
-        farmer.setFarmerType( dto.getFarmerType() );
 
         return farmer;
     }
@@ -70,21 +70,21 @@ public class FarmerMapperImpl implements FarmerMapper {
         farmerDto.setBankDetails( bankDetailsMapper.toDto( entity.getBankDetails() ) );
         farmerDto.setLandDetails( landDetailsMapper.toDto( entity.getLandDetails() ) );
         farmerDto.setCrops( cropListToCropDtoList( entity.getCrops() ) );
-        farmerDto.setId( entity.getId() );
-        farmerDto.setFirstName( entity.getFirstName() );
-        farmerDto.setMiddleName( entity.getMiddleName() );
-        farmerDto.setLastName( entity.getLastName() );
         farmerDto.setAadharNumber( entity.getAadharNumber() );
-        farmerDto.setEmail( entity.getEmail() );
-        farmerDto.setPhoneNumber( entity.getPhoneNumber() );
-        farmerDto.setGender( entity.getGender() );
-        farmerDto.setEducation( entity.getEducation() );
+        farmerDto.setDateOfBirth( entity.getDateOfBirth() );
         farmerDto.setDocument( entity.getDocument() );
         farmerDto.setDocumentPath( entity.getDocumentPath() );
-        farmerDto.setDateOfBirth( entity.getDateOfBirth() );
+        farmerDto.setEducation( entity.getEducation() );
+        farmerDto.setEmail( entity.getEmail() );
+        farmerDto.setFarmerType( entity.getFarmerType() );
+        farmerDto.setFirstName( entity.getFirstName() );
+        farmerDto.setGender( entity.getGender() );
+        farmerDto.setId( entity.getId() );
+        farmerDto.setLastName( entity.getLastName() );
+        farmerDto.setMiddleName( entity.getMiddleName() );
+        farmerDto.setPhoneNumber( entity.getPhoneNumber() );
         farmerDto.setPortalAccess( entity.getPortalAccess() );
         farmerDto.setPortalRole( entity.getPortalRole() );
-        farmerDto.setFarmerType( entity.getFarmerType() );
 
         return farmerDto;
     }

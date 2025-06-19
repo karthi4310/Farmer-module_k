@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-17T09:04:58+0530",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.14 (Oracle Corporation)"
+    date = "2025-06-19T17:11:29+0530",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.42.0.v20250514-1000, environment: Java 21.0.7 (Eclipse Adoptium)"
 )
 @Component
 public class CropMapperImpl implements CropMapper {
@@ -21,18 +21,18 @@ public class CropMapperImpl implements CropMapper {
 
         CropDto.CropDtoBuilder cropDto = CropDto.builder();
 
-        cropDto.photo( crop.getPhoto() );
+        cropDto.areaInAcres( crop.getAreaInAcres() );
         cropDto.cropName( crop.getCropName() );
         cropDto.cropType( crop.getCropType() );
-        cropDto.areaInAcres( crop.getAreaInAcres() );
-        cropDto.surveyNumber( crop.getSurveyNumber() );
-        cropDto.soilTest( crop.getSoilTest() );
-        cropDto.soilTestCertificate( crop.getSoilTestCertificate() );
-        cropDto.irrigationSource( crop.getIrrigationSource() );
         cropDto.geoTag( crop.getGeoTag() );
+        cropDto.irrigationSource( crop.getIrrigationSource() );
         cropDto.latitude( crop.getLatitude() );
         cropDto.longitude( crop.getLongitude() );
         cropDto.netIncome( crop.getNetIncome() );
+        cropDto.photo( crop.getPhoto() );
+        cropDto.soilTest( crop.getSoilTest() );
+        cropDto.soilTestCertificate( crop.getSoilTestCertificate() );
+        cropDto.surveyNumber( crop.getSurveyNumber() );
 
         return cropDto.build();
     }
@@ -45,18 +45,18 @@ public class CropMapperImpl implements CropMapper {
 
         Crop.CropBuilder crop = Crop.builder();
 
-        crop.photo( cropDTO.getPhoto() );
+        crop.areaInAcres( cropDTO.getAreaInAcres() );
         crop.cropName( cropDTO.getCropName() );
         crop.cropType( cropDTO.getCropType() );
-        crop.areaInAcres( cropDTO.getAreaInAcres() );
-        crop.surveyNumber( cropDTO.getSurveyNumber() );
-        crop.soilTest( cropDTO.getSoilTest() );
-        crop.soilTestCertificate( cropDTO.getSoilTestCertificate() );
-        crop.irrigationSource( cropDTO.getIrrigationSource() );
         crop.geoTag( cropDTO.getGeoTag() );
+        crop.irrigationSource( cropDTO.getIrrigationSource() );
         crop.latitude( cropDTO.getLatitude() );
         crop.longitude( cropDTO.getLongitude() );
         crop.netIncome( cropDTO.getNetIncome() );
+        crop.photo( cropDTO.getPhoto() );
+        crop.soilTest( cropDTO.getSoilTest() );
+        crop.soilTestCertificate( cropDTO.getSoilTestCertificate() );
+        crop.surveyNumber( cropDTO.getSurveyNumber() );
 
         return crop.build();
     }
